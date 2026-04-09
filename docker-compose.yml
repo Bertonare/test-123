@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  # Service to run API tests
+  tests-api:
+    build: .
+    command: npm run test:api
+    volumes:
+      - .:/app
+      - /app/node_modules
+    env_file:
+      - .env
+
+  # Service to run E2E tests in headless mode
+  tests-e2e:
+    build: .
+    command: npm run test:e2e:headless
+    volumes:
+      - .:/app
+      - /app/node_modules
+    env_file:
+      - .env
+    # Cypress needs a display for some plugins, but 'run' is headless.
+    # We might need to map host display for 'open' but headless is standard for CI.
+    environment:
+      - CYPRESS_baseUrl=http://app:3000 # Example linking to an app service
+
+  # Example application service (mock)
+  # Change this to your actual application if you want to test locally
+  # app:
+  #   image: my-app-image:latest
+  #   ports:
+  #     - "3000:3000"

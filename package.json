@@ -1,0 +1,44 @@
+{
+  "name": "sdet-test-framework",
+  "version": "1.0.0",
+  "description": "Scalable SDET testing framework for API, Integration, and E2E tests.",
+  "main": "index.js",
+  "scripts": {
+    "test:api": "jest --config jest.config.ts",
+    "test:integration": "jest --config jest.config.ts src/integration",
+    "test:e2e": "cypress open",
+    "test:e2e:headless": "cypress run",
+    "lint": "eslint . --ext .ts",
+    "docker:build": "docker build -t sdet-framework .",
+    "docker:run": "docker-compose up"
+  },
+  "keywords": [
+    "sdet",
+    "testing",
+    "api",
+    "e2e",
+    "cypress",
+    "jest",
+    "typescript",
+    "docker",
+    "jenkins"
+  ],
+  "author": "Antigravity",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.11.24",
+    "@types/supertest": "^6.0.2",
+    "cypress": "^13.6.6",
+    "dotenv": "^16.4.5",
+    "jest": "^29.7.0",
+    "jest-junit": "^16.0.0",
+    "supertest": "^6.3.4",
+    "ts-jest": "^29.1.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "axios": "^1.6.7"
+  }
+}
