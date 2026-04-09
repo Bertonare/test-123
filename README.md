@@ -76,5 +76,3 @@ The provided `Jenkinsfile` is designed for a parallel execution strategy. It req
 
 Screenshots and JUnit reports are automatically archived as build artifacts.
 
----
-Created by Antigravity (Senior SDET AI Assistant)
