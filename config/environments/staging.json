@@ -1,0 +1,17 @@
+{
+  "name": "staging",
+  "label": "Staging Pre-Production",
+  "useDummyApp": false,
+  "timeoutMs": 12000,
+  "oauth": {
+    "tokenUrl": "https://auth.staging.qa-corp.internal/oauth/token",
+    "grantType": "client_credentials"
+  },
+  "services": {
+    "auth-service": "https://auth.staging.qa-corp.internal",
+    "users-service": "https://users.staging.qa-corp.internal",
+    "orders-service": "https://orders.staging.qa-corp.internal",
+    "web-portal": "https://portal.staging.qa-corp.internal",
+    "platform": "http://localhost:4000"
+  }
+}

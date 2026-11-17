@@ -1,14 +1,22 @@
 {
   "name": "sdet-test-framework",
-  "version": "1.0.0",
-  "description": "Scalable SDET testing framework for API, Integration, and E2E tests.",
-  "main": "index.js",
+  "version": "1.1.0",
+  "description": "Scalable SDET testing framework with AI Agent (MCP) support, Test Management Dashboard, Dummy App/Data, API/Integration (Jest), and E2E (Cypress).",
+  "main": "dist/index.js",
   "scripts": {
-    "test:api": "jest --config jest.config.ts",
-    "test:integration": "jest --config jest.config.ts src/integration",
+    "build": "tsc --noEmit && tsc -p cypress/tsconfig.json --noEmit",
+    "typecheck": "tsc --noEmit && tsc -p cypress/tsconfig.json --noEmit",
+    "test:api": "jest --config jest.config.ts --testPathPattern=\"\\\\.api\\\\.spec\\\\.ts$\"",
+    "test:integration": "jest --config jest.config.ts --testPathPattern=\"\\\\.integration\\\\.spec\\\\.ts$\"",
+    "test:backend": "jest --config jest.config.ts",
     "test:e2e": "cypress open",
-    "test:e2e:headless": "cypress run",
-    "lint": "eslint . --ext .ts",
+    "test:e2e:headed": "cypress run --headed --browser chrome",
+    "test:e2e:headless": "cypress run --headless",
+    "test:all": "ts-node src/scripts/run-all.ts",
+    "dummy-app": "ts-node src/dummy-app/start.ts",
+    "dashboard": "ts-node src/dashboard/start.ts",
+    "dev": "ts-node src/dashboard/start.ts",
+    "mcp": "ts-node src/mcp/server.ts",
     "docker:build": "docker build -t sdet-framework .",
     "docker:run": "docker-compose up"
   },
@@ -16,29 +24,37 @@
     "sdet",
     "testing",
     "api",
+    "integration",
     "e2e",
     "cypress",
     "jest",
     "typescript",
     "docker",
-    "jenkins"
+    "jenkins",
+    "mcp",
+    "ai-agent",
+    "dashboard"
   ],
   "author": "Antigravity",
   "license": "ISC",
   "devDependencies": {
+    "@types/express": "^4.17.21",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.11.24",
     "@types/supertest": "^6.0.2",
     "cypress": "^13.6.6",
-    "dotenv": "^16.4.5",
     "jest": "^29.7.0",
     "jest-junit": "^16.0.0",
+    "mocha-junit-reporter": "^2.2.1",
     "supertest": "^6.3.4",
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "axios": "^1.6.7"
+    "axios": "^1.6.7",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "zod": "^4.6.7"
   }
 }

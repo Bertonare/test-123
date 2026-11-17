@@ -3,8 +3,10 @@ import type { Config } from 'jest';
 const config: Config = {
   preset: 'ts-jest',
   testEnvironment: 'node',
+  roots: ['<rootDir>/src'],
   moduleDirectories: ['node_modules', 'src'],
   testMatch: ['**/__tests__/**/*.ts?(x)', '**/?(*.)+(spec|test).ts?(x)'],
+  testPathIgnorePatterns: ['/node_modules/', '/dist/', '/reports/'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   setupFiles: ['dotenv/config'],
   verbose: true,
@@ -16,6 +18,7 @@ const config: Config = {
       {
         outputDirectory: 'reports/junit',
         outputName: 'jest-junit.xml',
+        uniqueOutputName: 'true',
       },
     ],
   ],

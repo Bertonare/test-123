@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "sdet-test-framework": {
+      "command": "npx",
+      "args": ["ts-node", "src/mcp/server.ts"],
+      "env": {
+        "USE_DUMMY_APP": "true"
+      }
+    }
+  }
+}

@@ -1,16 +1,38 @@
-// ***********************************************
-// This example commands.ts shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
+/// <reference types="cypress" />
 
-Cypress.Commands.add('login', (username, password) => {
-  cy.visit('/login');
-  cy.get('#username').type(username);
-  cy.get('#password').type(password);
-  cy.get('#login-btn').click();
+import { loginPage } from './pages/LoginPage';
+
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      login(username: string, password: string): Chainable<void>;
+      loginBySession(username: string, password: string): Chainable<void>;
+      resetDummyData(): Chainable<void>;
+    }
+  }
+}
+
+Cypress.Commands.add('login', (username: string, password: string) => {
+  loginPage.login(username, password);
 });
+
+Cypress.Commands.add('loginBySession', (username: string, password: string) => {
+  cy.session(
+    [username],
+    () => {
+      loginPage.login(username, password);
+      cy.url().should('include', '/dashboard');
+    },
+    {
+      validate() {
+        cy.getCookie('dummy_session').should('exist');
+      },
+    }
+  );
+});
+
+Cypress.Commands.add('resetDummyData', () => {
+  cy.request('POST', '/api/test-utils/reset').its('status').should('eq', 200);
+});
+
+export {};

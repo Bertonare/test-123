@@ -1,0 +1,17 @@
+{
+  "name": "qa",
+  "label": "QA Integration Environment",
+  "useDummyApp": false,
+  "timeoutMs": 10000,
+  "oauth": {
+    "tokenUrl": "https://auth.qa.qa-corp.internal/oauth/token",
+    "grantType": "client_credentials"
+  },
+  "services": {
+    "auth-service": "https://auth.qa.qa-corp.internal",
+    "users-service": "https://users.qa.qa-corp.internal",
+    "orders-service": "https://orders.qa.qa-corp.internal",
+    "web-portal": "https://portal.qa.qa-corp.internal",
+    "platform": "http://localhost:4000"
+  }
+}

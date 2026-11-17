@@ -1,0 +1,59 @@
+{
+  "projects": [
+    {
+      "id": "auth-service",
+      "name": "Auth & OAuth 2.0 Service",
+      "type": "microservice",
+      "owner": "Identity Squad",
+      "description": "Token issuance, client credentials, password grants, and token revocation checks.",
+      "defaultLayer": "backend-api",
+      "jenkinsJob": "sdet-test-framework",
+      "testRoot": "src/projects/auth-service",
+      "tags": ["smoke", "security", "oauth"]
+    },
+    {
+      "id": "users-service",
+      "name": "Users Directory Microservice",
+      "type": "microservice",
+      "owner": "Core Platform Squad",
+      "description": "User CRUD APIs, Zod contract validation, role permissions, and pagination.",
+      "defaultLayer": "backend-api",
+      "jenkinsJob": "sdet-test-framework",
+      "testRoot": "src/projects/users-service",
+      "tags": ["smoke", "api", "contract"]
+    },
+    {
+      "id": "orders-service",
+      "name": "Orders & Inventory Microservice",
+      "type": "microservice",
+      "owner": "Commerce Squad",
+      "description": "Cross-service order placement, inventory decrement, and 409 conflict integration flows.",
+      "defaultLayer": "backend-integration",
+      "jenkinsJob": "sdet-test-framework",
+      "testRoot": "src/projects/orders-service",
+      "tags": ["regression", "integration"]
+    },
+    {
+      "id": "web-portal",
+      "name": "Customer Web Portal (Cypress E2E)",
+      "type": "frontend",
+      "owner": "Experience Squad",
+      "description": "Browser E2E specs using Page Object Model and cy.session() caching.",
+      "defaultLayer": "frontend-e2e",
+      "jenkinsJob": "sdet-test-framework",
+      "testRoot": "cypress/e2e/web-portal",
+      "tags": ["smoke", "e2e", "ui"]
+    },
+    {
+      "id": "platform",
+      "name": "SDET Dashboard & Control Plane",
+      "type": "platform",
+      "owner": "QA Platform Team",
+      "description": "Integration tests for Dashboard APIs, Dummy Data seeding, Jenkins integration, and AI diagnostics.",
+      "defaultLayer": "backend-integration",
+      "jenkinsJob": "sdet-test-framework",
+      "testRoot": "src/projects/platform",
+      "tags": ["platform", "integration"]
+    }
+  ]
+}

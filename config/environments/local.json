@@ -1,0 +1,17 @@
+{
+  "name": "local",
+  "label": "Local (Dummy Target App)",
+  "useDummyApp": true,
+  "timeoutMs": 5000,
+  "oauth": {
+    "tokenUrl": "http://localhost:3000/oauth/token",
+    "grantType": "client_credentials"
+  },
+  "services": {
+    "auth-service": "http://localhost:3000",
+    "users-service": "http://localhost:3000",
+    "orders-service": "http://localhost:3000",
+    "web-portal": "http://localhost:3000",
+    "platform": "http://localhost:4000"
+  }
+}

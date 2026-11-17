@@ -12,8 +12,8 @@
     "paths": {
       "*": ["node_modules/*", "src/*"]
     },
-    "types": ["node", "jest", "cypress"]
+    "types": ["node", "jest"]
   },
-  "include": ["src/**/*.ts", "cypress/**/*.ts", "jest.config.ts", "cypress.config.ts"],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*.ts", "jest.config.ts"],
+  "exclude": ["node_modules", "cypress", "cypress.config.ts"]
 }

@@ -1,0 +1,17 @@
+{
+  "name": "dev",
+  "label": "Development Cluster",
+  "useDummyApp": false,
+  "timeoutMs": 8000,
+  "oauth": {
+    "tokenUrl": "https://auth.dev.qa-corp.internal/oauth/token",
+    "grantType": "client_credentials"
+  },
+  "services": {
+    "auth-service": "https://auth.dev.qa-corp.internal",
+    "users-service": "https://users.dev.qa-corp.internal",
+    "orders-service": "https://orders.dev.qa-corp.internal",
+    "web-portal": "https://portal.dev.qa-corp.internal",
+    "platform": "http://localhost:4000"
+  }
+}

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test Control</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div>
+        <div class="brand">
+          <div class="brand-badge">TC</div>
+          <div class="brand-title">Test Control</div>
+        </div>
+
+        <nav class="nav-list">
+          <button class="nav-item active" data-tab="overview">Overview</button>
+          <button class="nav-item" data-tab="backend">Backend Tests</button>
+          <button class="nav-item" data-tab="frontend">Frontend Tests</button>
+          <button class="nav-item" data-tab="jenkins">Jenkins CI/CD</button>
+          <button class="nav-item" data-tab="runs">Runs &amp; Logs</button>
+          <button class="nav-item" data-tab="dummy-data">Dummy Data &amp; Env</button>
+          <button class="nav-item" data-tab="ai-agent">AI Agent</button>
+        </nav>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="status-pill" id="dummy-health-pill">Dummy App: ...</div>
+        <div class="status-pill" id="jenkins-mode-pill">Jenkins: ...</div>
+        <a id="dummy-app-link" href="http://localhost:3000" target="_blank" rel="noreferrer" class="link-small">
+          Dummy App ↗
+        </a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <h1 id="page-title">Overview</h1>
+        <div class="topbar-actions">
+          <select id="select-project" class="select-ctrl" title="Project">
+            <option value="all">All Projects</option>
+          </select>
+          <select id="select-env" class="select-ctrl" title="Environment">
+            <option value="local">local</option>
+          </select>
+          <select id="select-case-type" class="select-ctrl" title="Case Type">
+            <option value="all">All Cases</option>
+            <option value="positive">Positive</option>
+            <option value="negative">Negative</option>
+            <option value="edge">Edge</option>
+          </select>
+          <button class="btn btn-secondary" id="btn-reset-dummy">Reset Data</button>
+          <button class="btn btn-accent" id="btn-trigger-jenkins-top">Jenkins</button>
+          <button class="btn btn-primary" id="btn-run-all">Run</button>
+        </div>
+      </header>
+
+      <div id="toast" class="toast hidden"></div>
+
+      <!-- OVERVIEW TAB -->
+      <section class="tab-panel active" id="tab-overview">
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">Projects</div>
+            <div class="kpi-value" id="kpi-total-projects">-</div>
+            <div class="kpi-meta" id="kpi-active-env">Env: -</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Test Cases</div>
+            <div class="kpi-value" id="kpi-total-cases">-</div>
+            <div class="kpi-meta" id="kpi-case-breakdown">-</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Backend Pass</div>
+            <div class="kpi-value text-green" id="kpi-backend-rate">-</div>
+            <div class="kpi-meta" id="kpi-backend-suites">-</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Frontend Pass</div>
+            <div class="kpi-value text-blue" id="kpi-frontend-rate">-</div>
+            <div class="kpi-meta" id="kpi-stability">-</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>Pass Trend (Last 10 Runs)</h2>
+            <span class="muted" id="trend-summary">-</span>
+          </div>
+          <div id="trend-bars" class="trend-bars"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>Projects</h2>
+            <div class="action-row">
+              <button class="btn btn-sm btn-primary" data-run-layer="backend-api">API</button>
+              <button class="btn btn-sm btn-primary" data-run-layer="backend-integration">Integration</button>
+              <button class="btn btn-sm btn-accent" data-run-layer="frontend-e2e">E2E</button>
+            </div>
+          </div>
+          <div id="projects-grid" class="suite-grid"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>Recent Runs</h2>
+            <div class="action-row">
+              <a class="btn btn-sm btn-secondary link-btn" href="/api/runs/export?format=csv">Export All CSV</a>
+              <button class="btn btn-sm btn-secondary" id="btn-refresh-overview">Refresh</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Run ID</th>
+                  <th>Project</th>
+                  <th>Env</th>
+                  <th>Layer</th>
+                  <th>Filter</th>
+                  <th>Status</th>
+                  <th>Results</th>
+                  <th>Duration</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="overview-runs-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- BACKEND TESTS TAB -->
+      <section class="tab-panel" id="tab-backend">
+        <div class="card">
+          <div class="card-header">
+            <h2>Backend Suites</h2>
+            <div class="action-row">
+              <input id="search-backend" class="input-ctrl input-search" placeholder="Search suites or cases..." />
+              <div class="seg-group">
+                <button class="seg-btn active" data-view-mode="list">List</button>
+                <button class="seg-btn" data-view-mode="cards">Cards</button>
+              </div>
+              <button class="btn btn-sm btn-secondary" data-toggle-expand="backend">Expand All</button>
+              <button class="btn btn-sm btn-primary" data-run-layer="backend-api">Run API</button>
+              <button class="btn btn-sm btn-primary" data-run-layer="backend-integration">Run Integration</button>
+            </div>
+          </div>
+          <div id="backend-suites-list"></div>
+        </div>
+      </section>
+
+      <!-- FRONTEND TESTS TAB -->
+      <section class="tab-panel" id="tab-frontend">
+        <div class="card">
+          <div class="card-header">
+            <h2>Frontend E2E</h2>
+            <div class="action-row">
+              <input id="search-frontend" class="input-ctrl input-search" placeholder="Search specs..." />
+              <select id="select-cypress-mode" class="select-ctrl select-compact" title="Browser Execution Mode">
+                <option value="headless:electron">Mode: Headless</option>
+                <option value="headed:chrome">Mode: Headed (Chrome)</option>
+                <option value="headed:chrome:keep">Mode: Headed (Chrome + Keep Open)</option>
+                <option value="headed:electron">Mode: Headed (Electron)</option>
+              </select>
+              <div class="seg-group">
+                <button class="seg-btn active" data-view-mode="list">List</button>
+                <button class="seg-btn" data-view-mode="cards">Cards</button>
+              </div>
+              <button class="btn btn-sm btn-secondary" data-toggle-expand="frontend">Expand All</button>
+              <button class="btn btn-sm btn-secondary" id="btn-cypress-open" title="Launch interactive Cypress Test Runner">Debug UI</button>
+              <button class="btn btn-sm btn-accent" id="btn-run-e2e-all" data-run-layer="frontend-e2e">Run All E2E</button>
+            </div>
+          </div>
+          <div id="frontend-suites-list"></div>
+        </div>
+      </section>
+
+      <!-- JENKINS CI/CD TAB -->
+      <section class="tab-panel" id="tab-jenkins">
+        <div class="split-grid">
+          <div class="card">
+            <div class="card-header">
+              <h2>Trigger Build</h2>
+              <button class="btn btn-sm btn-secondary" id="btn-jenkins-test-conn">Test Connection</button>
+            </div>
+            <div class="form-grid">
+              <label>Project
+                <select id="jk-project" class="input-ctrl"></select>
+              </label>
+              <label>Environment
+                <select id="jk-env" class="input-ctrl"></select>
+              </label>
+              <label>Layer
+                <select id="jk-layer" class="input-ctrl">
+                  <option value="all">all</option>
+                  <option value="backend-api">backend-api</option>
+                  <option value="backend-integration">backend-integration</option>
+                  <option value="frontend-e2e">frontend-e2e</option>
+                </select>
+              </label>
+              <label>Case Type
+                <select id="jk-case-type" class="input-ctrl">
+                  <option value="all">all</option>
+                  <option value="positive">positive</option>
+                  <option value="negative">negative</option>
+                  <option value="edge">edge</option>
+                </select>
+              </label>
+              <label>Tags
+                <input id="jk-tags" class="input-ctrl" placeholder="smoke" />
+              </label>
+              <label>Branch
+                <input id="jk-branch" class="input-ctrl" value="main" />
+              </label>
+            </div>
+            <div class="action-row" style="margin-top:12px;">
+              <button class="btn btn-accent" id="btn-jenkins-trigger">Trigger Pipeline</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h2>Jenkins Config</h2>
+              <span class="badge badge-unknown" id="jk-settings-mode">simulator</span>
+            </div>
+            <div class="form-grid">
+              <label>Jenkins URL
+                <input id="jk-cfg-url" class="input-ctrl" placeholder="https://jenkins.company.internal" />
+              </label>
+              <label>Username
+                <input id="jk-cfg-user" class="input-ctrl" placeholder="jenkins-bot" />
+              </label>
+              <label>API Token
+                <input id="jk-cfg-token" class="input-ctrl" type="password" placeholder="API Token" />
+              </label>
+              <label>Job Name
+                <input id="jk-cfg-job" class="input-ctrl" value="sdet-test-framework" />
+              </label>
+            </div>
+            <div class="action-row" style="margin-top:12px;">
+              <button class="btn btn-sm btn-primary" id="btn-jenkins-save-cfg">Save</button>
+              <button class="btn btn-sm btn-secondary" id="btn-jenkins-use-sim">Use Simulator</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="split-grid">
+          <div class="card">
+            <div class="card-header">
+              <h2>Builds</h2>
+              <button class="btn btn-sm btn-secondary" id="btn-refresh-jenkins">Refresh</button>
+            </div>
+            <div id="jenkins-builds-list" class="run-list"></div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h2 id="jk-build-title">Build Details</h2>
+              <button class="btn btn-sm btn-secondary hidden" id="btn-open-linked-run">Open Run</button>
+            </div>
+            <div id="jk-stages-bar" class="stage-bar"></div>
+            <pre id="jk-console-logs" class="log-box">No build selected.</pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- RUNS & LOGS TAB -->
+      <section class="tab-panel" id="tab-runs">
+        <div class="split-grid">
+          <div class="card">
+            <div class="card-header">
+              <h2>Runs</h2>
+              <div class="action-row">
+                <a class="btn btn-sm btn-secondary link-btn" href="/api/runs/export?format=csv">CSV</a>
+                <a class="btn btn-sm btn-secondary link-btn" href="/api/runs/export?format=json">JSON</a>
+                <button class="btn btn-sm btn-secondary" id="btn-seed-runs">Restore Seed</button>
+              </div>
+            </div>
+            <div id="runs-list" class="run-list"></div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h2 id="run-detail-title">Run Details</h2>
+              <div class="action-row">
+                <a id="btn-export-json" class="btn btn-sm btn-secondary link-btn hidden" href="#">JSON</a>
+                <a id="btn-export-csv" class="btn btn-sm btn-secondary link-btn hidden" href="#">CSV</a>
+                <a id="btn-export-html" class="btn btn-sm btn-accent link-btn hidden" href="#">HTML Report</a>
+                <button class="btn btn-sm btn-danger hidden" id="btn-cancel-run">Cancel</button>
+              </div>
+            </div>
+            <div id="run-detail-meta" class="meta-bar"></div>
+            <div id="run-detail-cases" class="case-list"></div>
+            <pre id="run-detail-logs" class="log-box">No run selected.</pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- DUMMY DATA & ENV TAB -->
+      <section class="tab-panel" id="tab-dummy-data">
+        <div class="card">
+          <div class="card-header">
+            <h2>Dummy Data &amp; Pre-flight Health</h2>
+            <div class="action-row">
+              <span class="muted" id="dummy-reset-timestamp">-</span>
+              <button class="btn btn-sm btn-accent" id="btn-env-health">Check Services</button>
+              <button class="btn btn-sm btn-primary" id="btn-seed-users">Seed +3 Users</button>
+              <button class="btn btn-sm btn-secondary" id="btn-reset-dummy-2">Reset</button>
+            </div>
+          </div>
+          <div id="env-health-results" class="stage-bar hidden"></div>
+        </div>
+
+        <div class="split-grid">
+          <div class="card">
+            <h2>Users</h2>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>ID</th><th>Username</th><th>Name</th><th>Email</th><th>Role</th></tr></thead>
+                <tbody id="dummy-users-body"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <h2>Environment</h2>
+            <div id="env-config-box" class="kv-list"></div>
+          </div>
+        </div>
+
+        <div class="split-grid">
+          <div class="card">
+            <h2>Products</h2>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>ID</th><th>SKU</th><th>Name</th><th>Price</th><th>Stock</th></tr></thead>
+                <tbody id="dummy-products-body"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <h2>Orders</h2>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>ID</th><th>User</th><th>Product</th><th>Qty</th><th>Total</th><th>Status</th></tr></thead>
+                <tbody id="dummy-orders-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- AI AGENT TAB -->
+      <section class="tab-panel" id="tab-ai-agent">
+        <div class="card">
+          <div class="card-header">
+            <h2>AI Agent &amp; MCP</h2>
+            <button class="btn btn-sm btn-primary" id="btn-copy-ai-prompt">Copy Diagnostics</button>
+          </div>
+          <pre id="ai-prompt-box" class="log-box">Loading...</pre>
+          <h3>.mcp.json</h3>
+          <pre id="ai-mcp-box" class="log-box"></pre>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- SOURCE VIEWER MODAL -->
+  <div id="source-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-file-title">Source</h3>
+        <button class="btn btn-sm btn-secondary" id="btn-close-modal">Close</button>
+      </div>
+      <pre id="modal-file-body" class="log-box" style="max-height: 70vh;"></pre>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

@@ -1,33 +1,50 @@
 version: '3.8'
 
 services:
-  # Service to run API tests
-  tests-api:
+  # Built-in Dummy Target App (OAuth + REST API + Web UI)
+  dummy-app:
     build: .
-    command: npm run test:api
+    command: npm run dummy-app
+    ports:
+      - "3000:3000"
+    environment:
+      - DUMMY_APP_PORT=3000
+
+  # Test Management Dashboard (Backend + Frontend + AI Diagnostics)
+  dashboard:
+    build: .
+    command: npm run dashboard
+    ports:
+      - "4000:4000"
+      - "3000:3000"
     volumes:
       - .:/app
       - /app/node_modules
-    env_file:
-      - .env
+    environment:
+      - USE_DUMMY_APP=true
+      - DUMMY_APP_PORT=3000
+      - DASHBOARD_PORT=4000
 
-  # Service to run E2E tests in headless mode
+  # Service to run Backend API & Integration tests
+  tests-backend:
+    build: .
+    command: npm run test:backend
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - USE_DUMMY_APP=true
+
+  # Service to run Frontend Cypress E2E tests in headless mode
   tests-e2e:
     build: .
+    depends_on:
+      - dummy-app
     command: npm run test:e2e:headless
     volumes:
       - .:/app
       - /app/node_modules
-    env_file:
-      - .env
-    # Cypress needs a display for some plugins, but 'run' is headless.
-    # We might need to map host display for 'open' but headless is standard for CI.
     environment:
-      - CYPRESS_baseUrl=http://app:3000 # Example linking to an app service
-
-  # Example application service (mock)
-  # Change this to your actual application if you want to test locally
-  # app:
-  #   image: my-app-image:latest
-  #   ports:
-  #     - "3000:3000"
+      - CYPRESS_BASE_URL=http://dummy-app:3000
+      - CYPRESS_USERNAME=admin
+      - CYPRESS_PASSWORD=password
